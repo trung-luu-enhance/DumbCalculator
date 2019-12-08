@@ -1,0 +1,5 @@
+I created a calculator.
+
+I implemented a function to evaluate mathematical expressions from string input.
+
+The calculator has 2 text views. One for the mathematical expression. After hitting equal, the other textview will give you the result.

@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView exp_tv;
     private TextView res_tv;
+    private boolean paraOpen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
         exp_tv = findViewById(R.id.exp_textview);
         res_tv = findViewById(R.id.res_textview);
+        paraOpen = false;
     }
 
     public void onButtonClick(View view){
@@ -104,6 +106,11 @@ public class MainActivity extends AppCompatActivity {
                 newText = newText + "%";
                 exp_tv.setText(newText);
                 break;
+            case R.id.para_button:
+                newText = (paraOpen) ? newText + ")" : newText + "(";
+                paraOpen = !paraOpen;
+                exp_tv.setText(newText);
+                break;
             default:
                 return;
         }
@@ -150,6 +157,16 @@ public class MainActivity extends AppCompatActivity {
                 values.push(Integer.parseInt(sbuf.toString()));
                 --i;
             }
+            // Current token is an opening brace, push it to 'ops'
+            else if (tokens[i] == '(')
+                ops.push(tokens[i]);
+                // Closing brace encountered, solve entire brace
+            else if (tokens[i] == ')')
+            {
+                while (ops.peek() != '(')
+                    values.push(applyOp(ops.pop(), values.pop(), values.pop()));
+                ops.pop();
+            }
             // Current token is an operator.
             else if (tokens[i] == '+' || tokens[i] == '-' ||
                     tokens[i] == '*' || tokens[i] == '/' || tokens[i]=='%')
@@ -178,6 +195,8 @@ public class MainActivity extends AppCompatActivity {
     // otherwise returns false.
     public static boolean hasPrecedence(char op1, char op2)
     {
+        if (op2 == '(' || op2 == ')')
+            return false;
         if ((op1 == '*' || op1 == '/' || op1 == '%') && (op2 == '+' || op2 == '-'))
             return false;
         else

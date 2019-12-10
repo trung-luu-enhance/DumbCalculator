@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_lanscape);
 
         exp_tv = findViewById(R.id.exp_textview);
         res_tv = findViewById(R.id.res_textview);
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        if (exp_tv.getText().length() > 33)
+        if (exp_tv.getText().length() > 58)
             return;
 
         switch (view.getId()) {
@@ -111,6 +111,10 @@ public class MainActivity extends AppCompatActivity {
                 paraOpen = !paraOpen;
                 exp_tv.setText(newText);
                 break;
+            case R.id.dot_button:
+                newText = newText + ".";
+                exp_tv.setText(newText);
+                break;
             default:
                 return;
         }
@@ -120,27 +124,27 @@ public class MainActivity extends AppCompatActivity {
         String expression = exp_tv.getText().toString();
 
         if (expression.charAt(expression.length()-1) == '+'
-            ||expression.charAt(expression.length()-1) == '-'){
+                ||expression.charAt(expression.length()-1) == '-'){
             expression += "0";
         }
 
         if (expression.charAt(expression.length()-1) == '*'
-            ||expression.charAt(expression.length()-1) == '/'
-            ||expression.charAt(expression.length()-1) == '%'){
+                ||expression.charAt(expression.length()-1) == '/'
+                ||expression.charAt(expression.length()-1) == '%'){
             expression += "1";
         }
 
-        int result = evaluate(expression);
-        res_tv.setText(Integer.toString(result));
+        float result = evaluate(expression);
+        res_tv.setText(Float.toString(result));
         exp_tv.setText("0");
     }
 
-    private static int evaluate(String expression)
+    private static float evaluate(String expression)
     {
         char[] tokens = expression.toCharArray();
 
         // Stack for numbers: 'values'
-        Stack<Integer> values = new Stack<Integer>();
+        Stack<Float> values = new Stack<Float>();
 
         // Stack for Operators: 'ops'
         Stack<Character> ops = new Stack<Character>();
@@ -152,9 +156,9 @@ public class MainActivity extends AppCompatActivity {
             {
                 StringBuffer sbuf = new StringBuffer();
                 // There may be more than one digits in number
-                while (i < tokens.length && tokens[i] >= '0' && tokens[i] <= '9')
+                while (i < tokens.length && ((tokens[i] >= '0' && tokens[i] <= '9') || tokens[i] == '.'))
                     sbuf.append(tokens[i++]);
-                values.push(Integer.parseInt(sbuf.toString()));
+                values.push(Float.parseFloat(sbuf.toString()));
                 --i;
             }
             // Current token is an opening brace, push it to 'ops'
@@ -197,7 +201,8 @@ public class MainActivity extends AppCompatActivity {
     {
         if (op2 == '(' || op2 == ')')
             return false;
-        if ((op1 == '*' || op1 == '/' || op1 == '%') && (op2 == '+' || op2 == '-'))
+        if ((op1 == '*' || op1 == '/' || op1 == '%')
+                && (op2 == '+' || op2 == '-'))
             return false;
         else
             return true;
@@ -205,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
     // A utility method to apply an operator 'op' on operands 'a'
     // and 'b'. Return the result.
-    public static int applyOp(char op, int b, int a)
+    public static float applyOp(char op, float b, float a)
     {
         switch (op)
         {
